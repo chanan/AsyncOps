@@ -1,0 +1,17 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Application.index
+GET     /viewOps                    controllers.Application.viewOps
+GET     /testOps                    controllers.Application.testOps
+GET     /addBasicOp                 controllers.TestOps.addBasicOperation
+GET     /addMultiOp                 controllers.TestOps.addMultiOperation
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /webjars/*file                    controllers.WebJarAssets.at(file)
+
+#Add AsyncOps
+->     /         					asyncOps.Routes

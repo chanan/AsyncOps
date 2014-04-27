@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>View Ops</title>
+    <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
+    <link rel='stylesheet' href='/assets/stylesheets/main.css'>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+    <script type="text/javascript" src="/js/hubs.js"></script>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Async Ops</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-header">
+                <h1 style="margin-top: 75px;">View Ops</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="page-header">
+                <div id="ops" style="height: 300px; width: 600px; overflow: auto; border: 1px solid #eee;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    function oninit() {
+        groupAdd("admin");
+        groupAdd("25");
+    }
+    function operationAdded(operation) {
+        console.log("operation added: %O", operation);
+        var el = $('<div class="operation" id="' + operation.uuid + '"><span></span><p></p></div>');
+        $("span", el).text("Started");
+        $("p", el).text(operation.message + " started on " + operation.startTime + " by " + operation.username + " (" + operation.group + ")");
+        if($("#" +  operation.uuid).length == 0) {
+            $('#ops').append(el);
+        }
+    }
+    function operationComplete(operation) {
+        console.log("operation done: %O", operation);
+        var el = $('<div class="operation done" id="' + operation.uuid + '"><span></span><p></p></div>');
+        $("span", el).text("Started");
+        $("p", el).text(operation.message + " started on " + operation.startTime + " ended: " + operation.endTime + " by " + operation.username + " (" + operation.group + ")");
+        $('#' + operation.uuid).html(el);
+    }
+    function operationStatus(operation) {
+        console.log("operation status: %O", operation);
+        var el = $('<div class="operation" id="' + operation.uuid + '"><span></span><p></p></div>');
+        $("span", el).text("Started");
+        $("p", el).text(operation.message + " started on " + operation.startTime + " by " + operation.username + " (" + operation.group + ") Percent: %" + operation.percent);
+        $('#' + operation.uuid).html(el);
+    }
+</script>

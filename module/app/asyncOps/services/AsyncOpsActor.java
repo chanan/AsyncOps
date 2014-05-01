@@ -20,7 +20,6 @@ import java.util.UUID;
 public class AsyncOpsActor extends UntypedActor {
     private final Map<UUID, OperationBase> operations = new HashMap<UUID, OperationBase>();
     private final HubContext<OperationsPage> hub;
-    private final Random rnd = new Random();
 
     public AsyncOpsActor()  {
         HubContext<OperationsPage> hub = null;
@@ -53,6 +52,8 @@ public class AsyncOpsActor extends UntypedActor {
             if(operation.isComplete()) {
                 hub.clients().group(operation.group).operationComplete(new Models.OperationComplete(operation.uuid, operation.message, operation.startTime, operation.getEndTime(), operation.username, operation.group));
                 hub.clients().group("admin").operationComplete(new Models.OperationComplete(operation.uuid, operation.message, operation.startTime, operation.getEndTime(), operation.username, operation.group));
+                //TODO: If we wanted to show a "history" of operation we could leave old ops in the map, but for now we will not support that and just remove done ops.
+                operations.remove(operation.uuid);
             }
         }
     }
@@ -71,8 +72,8 @@ public class AsyncOpsActor extends UntypedActor {
                 hub.clients().group(operation.group).operationStatus(new Models.OperationStatus(operation.uuid, operation.message, operation.startTime, percent, operation.username, operation.group));
                 hub.clients().group("admin").operationStatus(new Models.OperationStatus(operation.uuid, operation.message, operation.startTime, percent, operation.username, operation.group));
             }
-            final Props props = Props.create(Worker.class);
             if(getContext().getChild(operation.uuid.toString()) == null) {
+                final Props props = Props.create(Worker.class);
                 final ActorRef worker = getContext().actorOf(props, operation.uuid.toString());
                 final Messages.OperationRequest request = new Messages.OperationRequest(operation);
                 worker.tell(request, getSelf());

@@ -2,6 +2,8 @@ package asyncOps;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import asyncOps.services.AsyncOpsActor;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import play.Application;
 import play.Play;
 import play.Plugin;
@@ -16,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class AsyncOpsPlugin extends Plugin {
     private final Application application;
     private ActorRef asyncOpsActor;
+    private final static String intervalKey = "asyncops.interval";
 
     private static AsyncOpsPlugin plugin() {
         return Play.application().plugin(AsyncOpsPlugin.class);
@@ -33,9 +36,16 @@ public class AsyncOpsPlugin extends Plugin {
     public void onStart() {
         asyncOpsActor = Akka.system().actorOf(Props.create(AsyncOpsActor.class), "asyncOpsActor");
 
+        final Config config = ConfigFactory.load();
+
+        long interval = 10000;
+        if(config.getString(intervalKey) != null) {
+            interval = config.getMilliseconds(intervalKey);
+        }
+
         Akka.system().scheduler().schedule(
-                Duration.create(1, TimeUnit.SECONDS),
-                Duration.create(1, TimeUnit.SECONDS),
+                Duration.create(5, TimeUnit.SECONDS),
+                Duration.create(interval, TimeUnit.MILLISECONDS),
                 asyncOpsActor,
                 "tick",
                 Akka.system().dispatcher(),

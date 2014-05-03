@@ -1,6 +1,6 @@
 name := "AsyncOps"
 
-version := "0.1.0"
+version := "0.1.1"
 
 libraryDependencies ++= Seq(
 	"signalJ" %% "signalj" % "0.1.4"

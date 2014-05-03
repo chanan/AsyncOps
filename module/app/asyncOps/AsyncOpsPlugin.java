@@ -5,6 +5,7 @@ import asyncOps.services.AsyncOpsActor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import play.Application;
+import play.Logger;
 import play.Play;
 import play.Plugin;
 import play.libs.Akka;
@@ -34,12 +35,13 @@ public class AsyncOpsPlugin extends Plugin {
 
     @Override
     public void onStart() {
+        Logger.debug("Async Ops Starting");
         asyncOpsActor = Akka.system().actorOf(Props.create(AsyncOpsActor.class), "asyncOpsActor");
 
         final Config config = ConfigFactory.load();
 
         long interval = 10000;
-        if(config.getString(intervalKey) != null) {
+        if(config.hasPath(intervalKey)) {
             interval = config.getMilliseconds(intervalKey);
         }
 
